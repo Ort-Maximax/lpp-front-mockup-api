@@ -1,9 +1,9 @@
 
+const fs = require('fs');
 const appRouter = (app) => {
   app.get("/getData", (req, res) => {
-    const apiData = {
-      name: 'Home',
-      path: 'path/to/user/folder',
+    /*const apiData = {
+      path: 'user1',
       children: [
         {
           name: 'Folder 1',
@@ -65,9 +65,51 @@ const appRouter = (app) => {
           children: [],
         },
       ],
-    };
+    };*/
+    const apiData= {
+      path: 'user1',
+      children: [
+        {
+          name: 'Folder 1',
+          children: [
+            {
+              name: 'Folder 11',
+              children: [],
+            },
+            {
+              name: 'Folder $^3ç#?&',
+              children: [
+                { name: 'test2.tar.gz' },
+                { name: 'file2.rar' },
+              ],
+            },
+            { name: 'test.JPEG'},
+            { name: 'test.mp4'},
+            { name: 'test.txt'},
+            { name: 'test1.mp3'},
+            { name: 'test1.tar.gz'},
+            { name: 'test2.mp3'},
+            { name: 'test2.tar.bz2'},
+    
+          ],
+        },
+        {
+          name: 'Empty Folder',
+          children: [],
+        },
+      ],
+
+    }
     res.status(200).send(apiData);
   });
+
+  app.get("/getFile", (req, res) => {
+    const pathPrefix  = `${process.cwd()}/datas`;
+    const path = `${pathPrefix}/${req.query.path}`
+    if(fs.existsSync(path)){
+      fs.createReadStream(path).pipe(res);
+    }
+  })
 }
 
 module.exports = appRouter;

@@ -1,6 +1,8 @@
 
 const fs = require('fs');
 const appRouter = (app) => {
+  
+  const sendSeekable = require('send-seekable');  
   app.get("/getData", (req, res) => {
     /*const apiData = {
       path: 'user1',
@@ -85,6 +87,7 @@ const appRouter = (app) => {
             },
             { name: 'test.JPEG'},
             { name: 'test.mp4'},
+            { name: 'bunny.mp4'},
             { name: 'test.txt'},
             { name: 'test1.mp3'},
             { name: 'test1.tar.gz'},
@@ -103,11 +106,16 @@ const appRouter = (app) => {
     res.status(200).send(apiData);
   });
 
-  app.get("/getFile", (req, res) => {
+  app.get("/getFile", sendSeekable, (req, res) => {
     const pathPrefix  = `${process.cwd()}/datas`;
     const path = `${pathPrefix}/${req.query.path}`
     if(fs.existsSync(path)){
-      fs.createReadStream(path).pipe(res);
+      fs.stat(path, function(error, stat) {
+        if (error) { throw error; }
+        const stream = fs.createReadStream(path);
+        res.sendSeekable(stream, { length : stat.size});
+      }); 
+
     }
   })
 }

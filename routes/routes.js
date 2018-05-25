@@ -89,9 +89,9 @@ const appRouter = (app) => {
             { name: 'test.mp4'},
             { name: 'bunny.mp4'},
             { name: 'test.txt'},
-            { name: 'test1.mp3'},
+            { name: 'rien2rien.mp3'},
             { name: 'test1.tar.gz'},
-            { name: 'test2.mp3'},
+            { name: 'smells.mp3'},
             { name: 'test2.tar.bz2'},
     
           ],
@@ -112,10 +112,10 @@ const appRouter = (app) => {
     if(fs.existsSync(path)){
       fs.stat(path, function(error, stat) {
         if (error) { throw error; }
+        console.log(path);
         const stream = fs.createReadStream(path);
         res.sendSeekable(stream, { length : stat.size});
       }); 
-
     }
   })
 }

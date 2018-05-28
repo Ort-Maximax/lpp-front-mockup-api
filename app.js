@@ -10,6 +10,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 routes(app);
 
-const server = app.listen(3009, function () {
+const server = app.listen(process.env.PORT || 33009, function () {
     console.log("app running on port.", server.address().port);
 });

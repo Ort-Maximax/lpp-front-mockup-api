@@ -1,0 +1,12 @@
+-Stockage
+	-> Le stockage est fait dans l'instance de l'objet MAP
+	-> Pas de stockage non volatile actuellement
+-Regle metier
+	-> ex: Deployment, Reinforcement, War ...
+	-> Les regles metiers sont inclu avec les launchers, à dissocier
+	
+-Présentation
+	-> Console, UI, Webapp etc...
+	-> A regrouper dans un seul package
+-Modele de donnée
+	-> C'est bon

@@ -56,7 +56,7 @@ const appRouter = (app) => {
 
   app.get("/getFile", sendSeekable, (req, res) => {
     const pathPrefix  = `${process.cwd()}/datas`;
-    const path = `${pathPrefix}/${req.query.path}`
+    const path = `${pathPrefix}/${req.query.path}`;
     if(fs.existsSync(path)){
       fs.stat(path, function(error, stat) {
         if (error) { throw error; }
@@ -66,6 +66,15 @@ const appRouter = (app) => {
       }); 
     }
   })
+
+  app.get("/removeFile", (req, res) => {
+    const pathPrefix  = `${process.cwd()}/datas`;
+    const path = `${pathPrefix}/${req.query.path}`;
+    if(fs.existsSync(path)){
+      fs.unlink(path);
+    }
+  })
+
   app.put("/uploadFile", (req, res) => {
     if (!req.files || !req.body.path) {
       return res.status(400).send('Missing file data');

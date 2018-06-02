@@ -54,7 +54,7 @@ const appRouter = (app) => {
     
   });
 
-  app.get("/getFile", sendSeekable, (req, res) => {
+  app.get("/streamFile", sendSeekable, (req, res) => {
     const pathPrefix  = `${process.cwd()}/datas`;
     const path = `${pathPrefix}/${req.query.path}`;
     if(fs.existsSync(path)){
@@ -71,7 +71,15 @@ const appRouter = (app) => {
     const pathPrefix  = `${process.cwd()}/datas`;
     const path = `${pathPrefix}/${req.query.path}`;
     if(fs.existsSync(path)){
-      fs.unlink(path);
+      fs.unlinkSync(path);
+    }
+  })
+
+  app.get("/downloadFile", (req, res) => {
+    const pathPrefix  = `${process.cwd()}/datas`;
+    const path = `${pathPrefix}/${req.query.path}`;
+    if(fs.existsSync(path)){
+      res.download(path);
     }
   })
 

@@ -11,45 +11,8 @@ const appRouter = (app) => {
   const sendSeekable = require('send-seekable');
   app.get('/getData', (req, res) => {
     console.log('getData');
-    /*
-    const apiData= {
-      path: 'user1',
-      children: [
-        {
-          name: 'Folder 1',
-          children: [
-            {
-              name: 'Folder 11',
-              children: [],
-            },
-            {
-              name: 'Folder $^3ç#?&',
-              children: [
-                { name: 'test2.tar.gz' },
-                { name: 'file2.rar' },
-              ],
-            },
-            { name: 'test.JPEG'},
-            { name: 'test.mp4'},
-            { name: 'bunny.mp4'},
-            { name: 'test.txt'},
-            { name: 'rien2rien.mp3'},
-            { name: 'test1.tar.gz'},
-            { name: 'smells.mp3'},
-            { name: 'test2.tar.bz2'},
 
-          ],
-        },
-        {
-          name: 'Empty Folder',
-          children: [],
-        },
-      ],
-
-    }*/
-
-
-    PythonShell.run('../Tree.py', { args: ['datas/user1'] }, (err, results) => {
+    PythonShell.run('Tree.py', { args: ['datas/user1'] }, (err, results) => {
       if (err) throw err;
       res.status(200).send(results[0]);
     });

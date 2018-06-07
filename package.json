@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "node --max_old_space_size=2048 ./app.js",
-    "start:dev": "node --max_old_space_size=2048 ./app.js"
+    "start:dev": "nodemon --max_old_space_size=2048 ./app.js"
   },
   "dependencies": {
     "@google-cloud/storage": "^1.7.0",

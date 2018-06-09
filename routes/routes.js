@@ -32,8 +32,6 @@ const appRouter = (app) => {
       .catch(err => {
         console.log(err);
       });
-
-
   });
 
   app.get('/streamFile', sendSeekable, (req, res) => {
@@ -115,8 +113,6 @@ const appRouter = (app) => {
     if (!req.files || !req.body.path) {
       return res.status(400).send('Missing file data');
     }
-
-
   });
 };
 

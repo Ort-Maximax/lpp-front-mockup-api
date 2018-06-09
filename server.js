@@ -17,3 +17,5 @@ routes(app);
 const server = app.listen(process.env.PORT || 3009, function() {
   console.log('app running on port.', server.address().port);
 });
+
+module.exports = server;

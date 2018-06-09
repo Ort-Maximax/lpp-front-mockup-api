@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "start": "node --max_old_space_size=2048 ./app.js",
-    "start:dev": "nodemon --max_old_space_size=2048 ./app.js"
+    "start": "node --max_old_space_size=2048 ./server.js",
+    "start:dev": "nodemon --max_old_space_size=2048 ./server.js",
+    "test": "mocha"
   },
   "dependencies": {
     "@okta/jwt-verifier": "^0.0.12",
@@ -14,7 +15,11 @@
     "send-seekable": "^1.0.4"
   },
   "devDependencies": {
+    "assert": "^1.4.1",
     "eslint": "^4.19.1",
-    "eslint-config-strongloop": "^2.1.0"
+    "eslint-config-strongloop": "^2.1.0",
+    "http-status": "^1.1.2",
+    "mocha": "^5.2.0",
+    "superagent": "^3.8.3"
   }
 }

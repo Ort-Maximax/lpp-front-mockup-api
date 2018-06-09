@@ -16,22 +16,28 @@ const appRouter = (app) => {
 
   const sendSeekable = require('send-seekable');
   app.get('/getData', (req, res) => {
-    oktaJwtVerifier.verifyAccessToken(req.token)
-      .then(jwt => {
+    if (req.token){
+      oktaJwtVerifier.verifyAccessToken(req.token)
+        .then(jwt => {
         // the token is valid
-        console.log('getData');
+          console.log('getData');
 
-        PythonShell.run('Tree.py',
-          { args: ['datas/user1'] },
-          (err, results) => {
-            if (err) throw err;
-            res.status(200).send(results[0]);
-          });
-        console.log(jwt.claims);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+          PythonShell.run('Tree.py',
+            { args: ['datas/user1'] },
+            (err, results) => {
+              if (err) throw err;
+              res.status(200).send(results[0]);
+            });
+          console.log(jwt.claims);
+        })
+        .catch(err => {
+          console.log(err);
+          res.status(400).send('Identity check failed');
+        });
+    } else {
+      res.status(400).send('None shall pass');
+    }
+
   });
 
   app.get('/streamFile', sendSeekable, (req, res) => {
@@ -73,8 +79,6 @@ const appRouter = (app) => {
   });
 
   app.get('/downloadFile', (req, res) => {
-    console.log(req.roken);
-
     oktaJwtVerifier.verifyAccessToken(req.token)
       .then(jwt => {
         const pathPrefix = `${process.cwd()}/datas`;

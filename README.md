@@ -3,7 +3,7 @@
 # Mockup API
 
 API de mockup pour tester le client correctement
-https://still-reef-61170.herokuapp.com/
+https://valparaiso-mockup.herokuapp.com
 
 ---
 

@@ -4,7 +4,6 @@
     "start:dev": "nodemon --max_old_space_size=2048 ./app.js"
   },
   "dependencies": {
-    "@google-cloud/storage": "^1.7.0",
     "@okta/jwt-verifier": "^0.0.12",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",

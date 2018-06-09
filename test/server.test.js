@@ -6,7 +6,6 @@ var server = require('../server');
 const btoa = require('btoa');
 const { ISSUER, TEST_CLIENT_ID, TEST_CLIENT_SECRET, DEFAULT_SCOPE } = process.env
 
-
 describe('/getData', function() {
   var app;
 
@@ -23,8 +22,7 @@ describe('/getData', function() {
       assert.equal(res.statusCode, 400)
       done();
     });
-  });
-  
+  });  
 
   it('Should return data when passed a valid jwt', (done) => {
     const test = async () => {

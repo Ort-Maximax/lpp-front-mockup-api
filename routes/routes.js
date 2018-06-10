@@ -2,6 +2,7 @@
 'use strict';
 
 const fs = require('fs');
+const rimraf = require('rimraf');
 const fileUpload = require('express-fileupload');
 const PythonShell = require('python-shell');
 
@@ -28,7 +29,6 @@ const appRouter = (app) => {
               if (err) throw err;
               res.status(200).send(results[0]);
             });
-          console.log(jwt.claims);
         })
         .catch(err => {
           console.log(err);
@@ -62,14 +62,23 @@ const appRouter = (app) => {
 
   });
 
-  app.get('/removeFile', (req, res) => {
-
+  app.get('/removeElement', (req, res) => {
     oktaJwtVerifier.verifyAccessToken(req.token)
       .then(jwt => {
         const pathPrefix = `${process.cwd()}/datas`;
         const path = `${pathPrefix}/${req.query.path}`;
         if (fs.existsSync(path)){
-          fs.unlinkSync(path);
+          fs.stat(path, function(error, stat) {
+            if (error) { throw error; }
+            if (stat.isDirectory()){
+              rimraf(path, () => {
+                res.status(200).send('Folder deleted');
+              });
+            } else {
+              fs.unlinkSync(path);
+              res.status(200).send('File deleted');
+            }
+          });
         }
       })
       .catch(err => {
@@ -94,6 +103,9 @@ const appRouter = (app) => {
   });
 
   app.put('/uploadFile', (req, res) => {
+    if (!req.files || !req.body.path) {
+      return res.status(400).send('Missing file data');
+    }
 
     oktaJwtVerifier.verifyAccessToken(req.token)
       .then(jwt => {
@@ -107,16 +119,64 @@ const appRouter = (app) => {
             console.log(err);
             return res.status(500).send(err);
           }
-          res.send('File uploaded!');
+          res.status(200).send('File uploaded!');
         });
       })
       .catch(err => {
         console.log(err);
       });
+  });
 
-    if (!req.files || !req.body.path) {
-      return res.status(400).send('Missing file data');
-    }
+  app.post('/createDirectory', (req, res) => {
+    oktaJwtVerifier.verifyAccessToken(req.token)
+      .then(jwt => {
+        let dirPath = `./datas/${req.body.path}/Nouveau dossier`;
+        if (!fs.existsSync(dirPath)){
+          fs.mkdirSync(dirPath);
+          res.status(200).send('New folder created');
+        } else {
+          let i = 1;
+          while (fs.existsSync(dirPath)){
+            dirPath = `./datas/${req.body.path}/Nouveau dossier (${i})`;
+            i++;
+          }
+          fs.mkdirSync(dirPath);
+          res.status(200).send('New directory created');
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+
+  app.post('/renameElement', (req, res) => {
+    oktaJwtVerifier.verifyAccessToken(req.token)
+      .then(jwt => {
+        const elPath = `./datas/${req.body.path}`;
+        if (fs.existsSync(elPath)){
+          const arrPath = elPath.split('/');
+          arrPath[arrPath.length - 1] = req.body.newName;
+          const newPath = arrPath.join('/');
+
+          console.log(req.body.path, newPath);
+
+          fs.rename(`./datas/${req.body.path}`,
+            `${newPath}`, function(err) {
+              if (err){
+                res.status(501).send('Error renaming element');
+                console.log('ERROR: ' + err);
+              }
+              res.status(200).send('Element renamed successfully');
+            });
+
+        } else {
+          res.status(500).send('Error renaming element');
+        }
+
+      })
+      .catch(err => {
+        console.log(err);
+      });
   });
 };
 

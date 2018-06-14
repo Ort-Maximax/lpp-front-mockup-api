@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Ort-Maximax/lpp-front-mockup-api.svg?branch=master)](https://travis-ci.org/Ort-Maximax/lpp-front-mockup-api)
+[![Build Status](https://travis-ci.org/Ort-Maximax/lpp-front-mockup-api.svg?branch=master)](https://travis-ci.org/Ort-Maximax/lpp-front-mockup-api) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b6573aec1704497788e0fceed4762121)](https://www.codacy.com/app/EISAWESOME/lpp-front-mockup-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ort-Maximax/lpp-front-mockup-api&amp;utm_campaign=Badge_Grade)
 
 # Mockup API
 

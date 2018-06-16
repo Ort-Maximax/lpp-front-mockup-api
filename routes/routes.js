@@ -28,15 +28,15 @@ const appRouter = (app) => {
             { args: ['datas/user1'] },
             (err, results) => {
               if (err) throw err;
-              res.status(200).send(results[0]);
+              return res.status(200).send(results[0]);
             });
         })
         .catch(err => {
           console.log(err);
-          res.status(400).send('Identity check failed');
+          return res.status(400).send('Identity check failed');
         });
     } else {
-      res.status(400).send('None shall pass');
+      return res.status(400).send('None shall pass');
     }
 
   });
@@ -54,13 +54,9 @@ const appRouter = (app) => {
         const stream = fs.createReadStream(path);
         res.sendSeekable(stream, { length: stat.size});
       });
+    } else {
+      return res.status(400).send('File not found');
     }
-    /* })
-      .catch(err => {
-        console.log(err);
-      });*/
-
-
   });
 
   app.get('/removeElement', (req, res) => {
@@ -73,17 +69,18 @@ const appRouter = (app) => {
             if (error) { throw error; }
             if (stat.isDirectory()){
               rimraf(path, () => {
-                res.status(200).send('Folder deleted');
+                return res.status(200).send('Folder deleted');
               });
             } else {
               fs.unlinkSync(path);
-              res.status(200).send('File deleted');
+              return res.status(200).send('File deleted');
             }
           });
         }
       })
       .catch(err => {
         console.log(err);
+        return res.status(500).send(err);
       });
 
   });
@@ -101,7 +98,7 @@ const appRouter = (app) => {
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).send('Error');
+        return res.status(500).send(err);
       });
 
   });
@@ -123,11 +120,12 @@ const appRouter = (app) => {
             console.log(err);
             return res.status(500).send(err);
           }
-          res.status(200).send('File uploaded!');
+          return res.status(200).send('File uploaded!');
         });
       })
       .catch(err => {
         console.log(err);
+        return res.status(500).send(err);
       });
   });
 
@@ -137,7 +135,6 @@ const appRouter = (app) => {
         let dirPath = `./datas/${req.body.path}/Nouveau dossier`;
         if (!fs.existsSync(dirPath)){
           fs.mkdirSync(dirPath);
-          res.status(200).send('New folder created');
         } else {
           let i = 1;
           while (fs.existsSync(dirPath)){
@@ -145,11 +142,12 @@ const appRouter = (app) => {
             i++;
           }
           fs.mkdirSync(dirPath);
-          res.status(200).send('New directory created');
         }
+        return res.status(200).send('New directory created');
       })
       .catch(err => {
         console.log(err);
+        return res.status(500).send(err);
       });
   });
 
@@ -167,19 +165,19 @@ const appRouter = (app) => {
           fs.rename(`./datas/${req.body.path}`,
             `${newPath}`, function(err) {
               if (err){
-                res.status(501).send('Error renaming element');
                 console.log('ERROR: ' + err);
+                return res.status(501).send('Error renaming element');
               }
-              res.status(200).send('Element renamed successfully');
+              return res.status(200).send('Element renamed successfully');
             });
 
         } else {
-          res.status(500).send('Error renaming element');
+          return res.status(500).send('Error renaming element');
         }
 
       })
       .catch(err => {
-        console.log(err);
+        return res.status(500).send(err);
       });
   });
 };

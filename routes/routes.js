@@ -8,6 +8,7 @@ const PythonShell = require('python-shell');
 
 const OktaJwtVerifier = require('@okta/jwt-verifier');
 
+
 const oktaJwtVerifier = new OktaJwtVerifier({
   issuer: 'https://dev-438691.oktapreview.com/oauth2/default',
 });
@@ -94,10 +95,13 @@ const appRouter = (app) => {
         const path = `${pathPrefix}/${req.query.path}`;
         if (fs.existsSync(path)){
           res.download(path);
+          return res.status(200);
         }
+        return res.status(400).send('File not found');
       })
       .catch(err => {
         console.log(err);
+        return res.status(500).send('Error');
       });
 
   });

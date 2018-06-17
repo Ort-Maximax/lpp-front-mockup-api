@@ -27,10 +27,10 @@ const appRouter = (app) => {
       oktaJwtVerifier.verifyAccessToken(req.token)
         .then(jwt => {
           // the token is valid
-          console.log('getData');
+          console.log(jwt.claims.sub);
 
           PythonShell.run('Tree.py',
-            { args: ['datas/user1'] },
+            { args: [`datas/${jwt.claims.sub}`] },
             (err, results) => {
               if (err) throw err;
               return res.status(200).send(results[0]);

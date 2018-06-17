@@ -27,7 +27,9 @@ if len(sys.argv) < 2:
     logging.warning(os.path.realpath(__file__).split('/')[-1] + ": Argument(s) manquant(s).\npython3 Delete.py USER FILE|DIRECTORY [FILE|DIRECTORY] ...")
 
 elif not os.path.isdir('./' + sys.argv[1]):
-    logging.warning("The user " + sys.argv[1] + " does not exist or has not been initialised yet.")
+    os.makedirs('./' + sys.argv[1])
+    print(json.dumps(path_to_dict('./' + sys.argv[1])))
+    # logging.warning("The user " + sys.argv[1] + " does not exist or has not been initialised yet.")
 
 else:
     print(json.dumps(path_to_dict('./' + sys.argv[1])))

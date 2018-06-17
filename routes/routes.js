@@ -5,7 +5,6 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const fileUpload = require('express-fileupload');
 const PythonShell = require('python-shell');
-
 const OktaJwtVerifier = require('@okta/jwt-verifier');
 
 
@@ -16,12 +15,18 @@ const oktaJwtVerifier = new OktaJwtVerifier({
 const appRouter = (app) => {
   app.use(fileUpload());
 
+  const updateClient = (req) => {
+    if (req.app.socket) {
+      req.app.socket.emit(`dataChange${req.token}`);
+    }
+  };
+
   const sendSeekable = require('send-seekable');
   app.get('/getData', (req, res) => {
     if (req.token){
       oktaJwtVerifier.verifyAccessToken(req.token)
         .then(jwt => {
-        // the token is valid
+          // the token is valid
           console.log('getData');
 
           PythonShell.run('Tree.py',
@@ -73,6 +78,7 @@ const appRouter = (app) => {
               });
             } else {
               fs.unlinkSync(path);
+              updateClient(req);
               return res.status(200).send('File deleted');
             }
           });
@@ -120,6 +126,7 @@ const appRouter = (app) => {
             console.log(err);
             return res.status(500).send(err);
           }
+          updateClient(req);
           return res.status(200).send('File uploaded!');
         });
       })
@@ -143,6 +150,7 @@ const appRouter = (app) => {
           }
           fs.mkdirSync(dirPath);
         }
+        updateClient(req);
         return res.status(200).send('New directory created');
       })
       .catch(err => {
@@ -168,6 +176,7 @@ const appRouter = (app) => {
                 console.log('ERROR: ' + err);
                 return res.status(501).send('Error renaming element');
               }
+              updateClient(req);
               return res.status(200).send('Element renamed successfully');
             });
 
@@ -183,3 +192,5 @@ const appRouter = (app) => {
 };
 
 module.exports = appRouter;
+
+

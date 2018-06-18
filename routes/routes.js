@@ -30,7 +30,8 @@ const appRouter = (app) => {
           console.log(jwt.claims.sub);
 
           PythonShell.run('Tree.py',
-            { args: [`datas/${jwt.claims.sub}`] },
+            { /* args: [`datas/${jwt.claims.sub}`]*/
+              args: ['datas/user1'] },
             (err, results) => {
               if (err) throw err;
               return res.status(200).send(results[0]);

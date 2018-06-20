@@ -7,11 +7,11 @@ const fileUpload = require('express-fileupload');
 const PythonShell = require('python-shell');
 const OktaJwtVerifier = require('@okta/jwt-verifier');
 
-
 const oktaJwtVerifier = new OktaJwtVerifier({
   issuer: 'https://dev-438691.oktapreview.com/oauth2/default',
 });
 
+// Auth middleware
 const authenticationRequired = (req, res, next) => {
   if (req.token) {
     return oktaJwtVerifier.verifyAccessToken(req.token)

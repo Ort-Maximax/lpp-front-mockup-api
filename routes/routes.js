@@ -5,25 +5,30 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const fileUpload = require('express-fileupload');
 const PythonShell = require('python-shell');
-const OktaJwtVerifier = require('@okta/jwt-verifier');
+var { generateToken, sendToken } = require('../utils/token.utils');
+var passport = require('passport');
+require('../passport')();
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
-const oktaJwtVerifier = new OktaJwtVerifier({
-  issuer: 'https://dev-438691.oktapreview.com/oauth2/default',
-});
+const { VALP_SECRET } = process.env;
+
 
 // Auth middleware
 const authenticationRequired = (req, res, next) => {
+  console.log(req.token);
   if (req.token) {
-    return oktaJwtVerifier.verifyAccessToken(req.token)
-      .then((jwt) => {
-        req.jwt = jwt;
-        next();
-      })
-      .catch((err) => {
-        res.status(401).send(err.message);
-      });
+    jwt.verify(req.token, VALP_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).send('None shall pass');
+      }
+      req.clientId = decoded.id;
+    });
+    // TODO : check token signature
+    // Et extraire l'user id du webtoken, le stocker dans la requete
+    next();
   } else {
-    res.status(401).send('None shall pass');
+    return res.status(401).send('None shall pass');
   }
 };
 
@@ -39,13 +44,24 @@ const appRouter = (app) => {
   const sendSeekable = require('send-seekable');
   app.get('/getData', authenticationRequired, (req, res) => {
     PythonShell.run('Tree.py',
-      { // args: [`datas/${req.jwt.claims.sub}`] },
+      { // args: [`datas/${req.clientId}`] },
         args: ['datas/user1'] },
       (err, results) => {
         if (err) throw err;
         return res.status(200).send(results[0]);
       });
   });
+
+  app.post('/auth/google', passport.authenticate('google-token', {session: false}), (req, res, next) => {
+    if (!req.user) {
+      return res.send(401, 'User Not Authenticated');
+    }
+    req.auth = {
+      id: req.user.id,
+    };
+
+    next();
+  }, generateToken, sendToken);
 
   app.get('/streamFile', sendSeekable, (req, res) => {
     const pathPrefix = `${process.cwd()}/datas`;

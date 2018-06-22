@@ -1,0 +1,67 @@
+'use strict';
+
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+module.exports = function() {
+
+  var db = mongoose.connect('mongodb://localhost:27017/valp-users');
+
+  var UserSchema = new Schema({
+    firstName: {
+      type: String,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      trim: true,
+    },
+    email: {
+      type: String, required: true,
+      trim: true, unique: true,
+      match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+    },
+    googleProvider: {
+      type: {
+        id: String,
+        token: String,
+      },
+      select: false,
+    },
+  });
+
+  UserSchema.set('toJSON', {getters: true, virtuals: true});
+
+  UserSchema.statics.upsertGoogleUser = function(accessToken, refreshToken, profile, cb) {
+    var That = this;
+    return this.findOne({
+      'googleProvider.id': profile.id,
+    }, function(err, user) {
+      // no user was found, lets create a new one
+      if (!user) {
+        var newUser = new That({
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          email: profile.emails[0].value,
+          googleProvider: {
+            id: profile.id,
+            token: accessToken,
+          },
+        });
+
+        newUser.save(function(error, savedUser) {
+          if (error) {
+            console.log(error);
+          }
+          return cb(error, savedUser);
+        });
+      } else {
+        return cb(err, user);
+      }
+    });
+  };
+
+  mongoose.model('User', UserSchema);
+
+  return db;
+};

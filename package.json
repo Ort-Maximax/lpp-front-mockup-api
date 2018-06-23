@@ -7,6 +7,7 @@
     "encrypt:env": "cat .env | travis encrypt --add",
     "start": "node --max_old_space_size=2048 ./server.js",
     "start:dev": "nodemon --max_old_space_size=2048 ./server.js",
+    "start:db" : "sudo mongod --dbpath \"/var/lib/mongodb\"",
     "test": "mocha"
   },
   "dependencies": {

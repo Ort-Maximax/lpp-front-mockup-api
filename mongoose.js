@@ -37,7 +37,6 @@ module.exports = () => {
     return this.findOne({
       'googleProvider.id': profile.id,
     }, (err, user) => {
-      console.log(err);
       // no user was found, lets create a new one
       if (!user) {
         const newUser = new That({
@@ -57,7 +56,6 @@ module.exports = () => {
           return cb(error, savedUser);
         });
       } else {
-        console.log(cb(err, user));
         return cb(err, user);
       }
     });

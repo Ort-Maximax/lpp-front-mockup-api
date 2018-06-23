@@ -15,9 +15,7 @@ module.exports = () => {
     clientSecret: GOOGLE_SECRET,
   },
   (accessToken, refreshToken, profile, done) => {
-    console.log('AH');
     User.upsertGoogleUser(accessToken, refreshToken, profile, (err, user) => {
-      console.log('AH2');
       console.log(err);
       return done(err, user);
     });

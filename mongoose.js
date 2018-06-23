@@ -34,7 +34,6 @@ module.exports = () => {
 
   UserSchema.statics.upsertGoogleUser = function(accessToken, refreshToken, profile, cb) {
     const That = this;
-    console.log('Mongoose');
     return this.findOne({
       'googleProvider.id': profile.id,
     }, (err, user) => {

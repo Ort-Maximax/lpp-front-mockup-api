@@ -5,27 +5,24 @@ const fs = require('fs');
 const rimraf = require('rimraf');
 const fileUpload = require('express-fileupload');
 const PythonShell = require('python-shell');
-var { generateToken, sendToken } = require('../utils/token.utils');
-var passport = require('passport');
+const { generateToken, sendToken } = require('../utils/token.utils');
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
 require('../passport')();
 require('dotenv').config();
-const jwt = require('jsonwebtoken');
 
 const { VALP_SECRET } = process.env;
 
-
 // Auth middleware
 const authenticationRequired = (req, res, next) => {
-  console.log(req.token);
   if (req.token) {
     jwt.verify(req.token, VALP_SECRET, (err, decoded) => {
       if (err) {
+        console.log(err);
         return res.status(401).send('None shall pass');
       }
       req.clientId = decoded.id;
     });
-    // TODO : check token signature
-    // Et extraire l'user id du webtoken, le stocker dans la requete
     next();
   } else {
     return res.status(401).send('None shall pass');
@@ -37,19 +34,14 @@ const appRouter = (app) => {
 
   const updateClient = (req) => {
     if (req.app.socket) {
-      req.app.socket.emit(`dataChange${req.token}`);
+      req.app.socket.emit(`dataChange${req.clientId}`);
     }
   };
 
   const sendSeekable = require('send-seekable');
-  app.get('/getData', authenticationRequired, (req, res) => {
-    PythonShell.run('Tree.py',
-      { // args: [`datas/${req.clientId}`] },
-        args: ['datas/user1'] },
-      (err, results) => {
-        if (err) throw err;
-        return res.status(200).send(results[0]);
-      });
+
+  app.get('/time', (req, res) => {
+    return res.status(200).send(Date.now().toString());
   });
 
   app.post('/auth/google', passport.authenticate('google-token', {session: false}), (req, res, next) => {
@@ -62,6 +54,17 @@ const appRouter = (app) => {
 
     next();
   }, generateToken, sendToken);
+
+
+  app.get('/getData', authenticationRequired, (req, res) => {
+    PythonShell.run('Tree.py',
+      { // args: [`datas/${req.clientId}`] },
+        args: ['datas/user1'] },
+      (err, results) => {
+        if (err) throw err;
+        return res.status(200).send(results[0]);
+      });
+  });
 
   app.get('/streamFile', sendSeekable, (req, res) => {
     const pathPrefix = `${process.cwd()}/datas`;
@@ -86,7 +89,7 @@ const appRouter = (app) => {
         fs.stat(path, (error, stat) => {
           if (error) { throw error; }
           if (stat.isDirectory()){
-            rimraf(path);
+            rimraf(path, () => {});
           } else {
             fs.unlinkSync(path);
           }
@@ -168,5 +171,3 @@ const appRouter = (app) => {
 };
 
 module.exports = appRouter;
-
-

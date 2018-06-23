@@ -1,13 +1,13 @@
 'use strict';
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-module.exports = function() {
+module.exports = () => {
 
-  var db = mongoose.connect('mongodb://localhost:27017/valp-users');
+  const db = mongoose.connect('mongodb://localhost:27017/valp-users');
 
-  var UserSchema = new Schema({
+  const UserSchema = new Schema({
     firstName: {
       type: String,
       trim: true,
@@ -33,13 +33,15 @@ module.exports = function() {
   UserSchema.set('toJSON', {getters: true, virtuals: true});
 
   UserSchema.statics.upsertGoogleUser = function(accessToken, refreshToken, profile, cb) {
-    var That = this;
+    const That = this;
+    console.log('Mongoose');
     return this.findOne({
       'googleProvider.id': profile.id,
-    }, function(err, user) {
+    }, (err, user) => {
+      console.log(err);
       // no user was found, lets create a new one
       if (!user) {
-        var newUser = new That({
+        const newUser = new That({
           firstName: profile.name.givenName,
           lastName: profile.name.familyName,
           email: profile.emails[0].value,
@@ -49,19 +51,19 @@ module.exports = function() {
           },
         });
 
-        newUser.save(function(error, savedUser) {
+        newUser.save((error, savedUser) => {
           if (error) {
             console.log(error);
           }
           return cb(error, savedUser);
         });
       } else {
+        console.log(cb(err, user));
         return cb(err, user);
       }
     });
   };
 
   mongoose.model('User', UserSchema);
-
   return db;
 };

@@ -6,7 +6,20 @@
 # Mockup API
 
 API de mockup pour tester le client correctement
+Build sur Travis, deploie sur Heroku
 https://valparaiso-mockup.herokuapp.com
+
+
+---
+
+## /auth/:provider
+Authentification API
+  - /auth/google
+
+---
+
+## /time
+Retourne l'heure du serveur, utiliser pour vérifié la validité d'un JWT
 
 ---
 
@@ -21,14 +34,14 @@ Retourne un stream du path fournis en parametre
 ---
 
 ## /removeFile
-Supprime le fichier au path fournis
+Supprime le/le fichier(s) spécifié(s)
 
 ---
 
 ## /downloadFile
-Télécharge le fichier au path fournis
+Télécharge le/les fichier(s) spécifiés
 
 ---
 
 ## /uploadFile
-Sauvegarde les fichiers sur le serveur au path fournis
+Sauvegarde le/les fichier(s) sur le serveur au path fournit

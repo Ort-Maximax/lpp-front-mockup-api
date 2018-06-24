@@ -2,7 +2,7 @@ require('dotenv').config();
 const assert = require('assert');
 const request = require('request');
 const server = require('../server');
-const btoa = require('btoa');
+const mongoose = require('mongoose');
 const {
   ISSUER,
   TEST_CLIENT_ID,
@@ -18,6 +18,7 @@ describe('/getData', function() {
 
   after(function() {
     app.close();
+    mongoose.connection.close()
   });
 
   it('Should reject request without jwt', (done) => {

@@ -6,28 +6,11 @@ const rimraf = require('rimraf');
 const fileUpload = require('express-fileupload');
 const PythonShell = require('python-shell');
 const { generateToken, sendToken } = require('../utils/token.utils');
-const jwt = require('jsonwebtoken');
 const passport = require('passport');
-require('../passport')();
+const middlewares = require('./middlewares');
+
+require('../db/passport')();
 require('dotenv').config();
-
-const { VALP_SECRET } = process.env;
-
-// Auth middleware
-const authenticationRequired = (req, res, next) => {
-  if (req.token) {
-    jwt.verify(req.token, VALP_SECRET, (err, decoded) => {
-      if (err) {
-        console.log(err);
-        return res.status(401).send('None shall pass');
-      }
-      req.clientId = decoded.id;
-    });
-    next();
-  } else {
-    return res.status(401).send('None shall pass');
-  }
-};
 
 const appRouter = (app) => {
   app.use(fileUpload());
@@ -56,8 +39,8 @@ const appRouter = (app) => {
   }, generateToken, sendToken);
 
 
-  app.get('/getData', authenticationRequired, (req, res) => {
-    PythonShell.run('Tree.py',
+  app.get('/getData', middlewares.authRequired, (req, res) => {
+    PythonShell.run('./core/Tree.py',
       { // args: [`datas/${req.clientId}`] },
         args: ['datas/user1'] },
       (err, results) => {
@@ -80,7 +63,7 @@ const appRouter = (app) => {
     }
   });
 
-  app.post('/removeElement', authenticationRequired, (req, res) => {
+  app.post('/removeElement', middlewares.authRequired, (req, res) => {
     const pathPrefix = `${process.cwd()}/datas`;
     req.body.forEach((path) => {
       path = `${pathPrefix}/${path}`;
@@ -100,7 +83,7 @@ const appRouter = (app) => {
     return res.status(200).send('File deleted');
   });
 
-  app.get('/downloadFile', authenticationRequired, (req, res) => {
+  app.get('/downloadFile', middlewares.authRequired, (req, res) => {
     const pathPrefix = `${process.cwd()}/datas`;
     const path = `${pathPrefix}/${req.query.path}`;
     if (fs.existsSync(path)){
@@ -111,7 +94,7 @@ const appRouter = (app) => {
 
   });
 
-  app.put('/uploadFile', authenticationRequired, (req, res) => {
+  app.put('/uploadFile', middlewares.authRequired, (req, res) => {
     if (!req.files || !req.body.path) {
       return res.status(400).send('Missing file data');
     }
@@ -131,7 +114,7 @@ const appRouter = (app) => {
     });
   });
 
-  app.post('/createDirectory', authenticationRequired, (req, res) => {
+  app.post('/createDirectory', middlewares.authRequired, (req, res) => {
     let dirPath = `./datas/${req.body.path}/Nouveau dossier`;
     if (!fs.existsSync(dirPath)){
       fs.mkdirSync(dirPath);
@@ -147,7 +130,7 @@ const appRouter = (app) => {
     return res.status(200).send('New directory created');
   });
 
-  app.post('/renameElement', authenticationRequired, (req, res) => {
+  app.post('/renameElement', middlewares.authRequired, (req, res) => {
     const elPath = `./datas/${req.body.path}`;
     if (fs.existsSync(elPath)){
       const arrPath = elPath.split('/');

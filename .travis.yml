@@ -8,6 +8,9 @@ env:
   global:
     - DB_USER=valp1
     - DB_PASSWORD=azevbn123
+    - GOOGLE_CLIENT=979187681926-as6gk94f9pfhl2ob739rjn8lhnk37oqv.apps.googleusercontent.com
+    - GOOGLE_SECRET=5G2oDzh8i21_-qY6z6j7iKFI
+    - VALP_SECRET=e7e4b966a611af9_-cb23c9672fcf50579505929ec
 deploy :
   provider: heroku
   app: valparaiso-mockup

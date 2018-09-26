@@ -6,7 +6,7 @@ const {DB_USER, DB_PASSWORD } = process.env;
 
 module.exports = () => {
 
-  const db = mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@ds261540.mlab.com:61540/valparaiso`);
+  const db = mongoose.connect(`mongodb://${DB_USER}:${DB_PASSWORD}@ds215093.mlab.com:15093/valp1`);
   // const db = mongoose.connect('mongodb://localhost:27017/valp-users');
 
   const UserSchema = new Schema({
